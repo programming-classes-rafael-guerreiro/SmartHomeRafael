@@ -1,7 +1,5 @@
 package com.smart.home.servlet;
 
-import static java.lang.String.valueOf;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,7 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.tribes.util.Arrays;
+import com.smart.home.model.UserDevice;
 
 @WebServlet("/devices")
 public class DevicesServlet extends HttpServlet {
@@ -30,40 +28,34 @@ public class DevicesServlet extends HttpServlet {
 			return;
 		}
 
-		String[][] data = new String[2][4];
+		UserDevice[] data = new UserDevice[2];
 
 		try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_home", "root",
 				"")) {
 			start = System.currentTimeMillis();
-			
+
 			ResultSet result = connection.prepareStatement(
 					"select u.user_id, u.name as user_name, d.device_id, d.name as device_name "
 							+ "from users u, devices d where u.user_id = d.user_id").executeQuery();
 
 			int line = 0;
 			while (result.next()) {
-				int column = 0;
+				UserDevice userDevice = new UserDevice(result.getInt("user_id"), result.getString("user_name"),
+						result.getInt("device_id"), result.getString("device_name"));
 
-				data[line][column++] = String.valueOf(result.getInt("user_id"));
-				data[line][column++] = result.getString("user_name");
-				data[line][column++] = valueOf(result.getInt("device_id"));
-				data[line][column++] = result.getString("device_name");
+				data[line] = userDevice;
 
 				line++;
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException("Something went wrong with the database.", e);
 		}
-		// vai no banco
-		// pega as devices
 		// coloca na devices.jsp
 		long end = System.currentTimeMillis();
 
 		System.out.println("Took " + (end - start) + " ms.");
 
-		for (int line = 0; line < data.length; line++)
-			System.out.println(Arrays.toString(data[line]));
-
+		req.setAttribute("data", data);
 		req.getRequestDispatcher("WEB-INF/jsp/devices.jsp").forward(req, resp);
 	}
 
