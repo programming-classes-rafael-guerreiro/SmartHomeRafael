@@ -9,7 +9,7 @@
 		<link href="<c:url value='/css/style.css' />" rel="stylesheet" type="text/css" />
 	</head>
 	<body>
-		<c:forEach items="${data}" var="userDevice" varStatus="status">
+		<c:forEach items="${data}" var="userDevice">
 			<p class="${userDevice.even ? 'even' : 'odd'}">${userDevice.formattedRow}</p>
 		</c:forEach>
 	</body>
