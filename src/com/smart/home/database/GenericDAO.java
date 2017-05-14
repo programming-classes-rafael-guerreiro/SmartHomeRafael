@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 // DAO = Data Access Object
@@ -18,8 +18,8 @@ public class GenericDAO<T> {
 	// Delete
 
 	public List<T> list(final String sql, GenericConverter<T> converter, Object... params) {
-		try (final Connection connection = ConnectionHelper.getConnection()) {
-			final List<T> entities = new ArrayList<>();
+		try (final Connection connection = ConnectionPool.getConnection()) {
+			final List<T> entities = new LinkedList<>();
 
 			final PreparedStatement statement = connection.prepareStatement(sql);
 			setParameters(statement, params);
@@ -45,7 +45,7 @@ public class GenericDAO<T> {
 	}
 
 	public int create(final String sql, Object... params) {
-		try (final Connection connection = ConnectionHelper.getConnection()) {
+		try (final Connection connection = ConnectionPool.getConnection()) {
 			connection.setAutoCommit(false);
 
 			final PreparedStatement statement = connection.prepareStatement(sql);
@@ -84,7 +84,7 @@ public class GenericDAO<T> {
 	}
 
 	public void update(final String sql, final int id, Object... params) {
-		try (final Connection connection = ConnectionHelper.getConnection()) {
+		try (final Connection connection = ConnectionPool.getConnection()) {
 			connection.setAutoCommit(false);
 
 			final PreparedStatement statement = connection.prepareStatement(sql);

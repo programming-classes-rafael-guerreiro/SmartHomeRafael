@@ -3,31 +3,31 @@ package com.smart.home.database;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.smart.home.model.UserDevice;
 
 public class UserDeviceDAO {
-	
+
 	// save // insert
 	// update
 	// delete
 	// get 1 // select
 
-	public UserDevice[] list() {
-		try (Connection connection = ConnectionHelper.getConnection()) {
-			UserDevice[] data = new UserDevice[2];
+	public List<UserDevice> list() {
+		try (Connection connection = ConnectionPool.getConnection()) {
+			List<UserDevice> data = new LinkedList<>();
+
 			ResultSet result = connection.prepareStatement(
 					"select u.user_id, u.name as user_name, d.device_id, d.name as device_name "
 							+ "from users u, devices d where u.user_id = d.user_id").executeQuery();
 
-			int line = 0;
 			while (result.next()) {
 				UserDevice userDevice = new UserDevice(result.getInt("user_id"), result.getString("user_name"),
 						result.getInt("device_id"), result.getString("device_name"));
 
-				data[line] = userDevice;
-
-				line++;
+				data.add(userDevice);
 			}
 
 			return data;
